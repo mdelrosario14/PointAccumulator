@@ -22,10 +22,9 @@ public interface PointAccumulatorService {
     /**
      * Saves the customer's points based on amount transaction.
      * @param newTx                 New transaction reference.
-     * @param amountValue           Total amount of transaction
      * @throws Business logic exception.
      */
-    void saveCustomerTransactionPoints(PtacNewTransaction newTx, Double amountValue) throws Exception;
+    void saveCustomerTransactionPoints(PtacNewTransaction newTx) throws Exception;
 
     /**
      * Create new customer.

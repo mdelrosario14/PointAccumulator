@@ -18,8 +18,9 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.ptac.exception.ServiceException;
 import com.ptac.model.PtacNewTransaction;
-import com.ptac.model.PtacTransaction;
+import com.ptac.model.PtacTransactionEntity;
 import com.ptac.model.PtacUser;
 import com.ptac.service.PointAccumulatorService;
 
@@ -38,18 +39,20 @@ public class PointAccumulatorServiceImpl implements PointAccumulatorService {
     private Double onePointDollarAmount;
 
     @Override
-    public Map<String, Double> getAllCustomerRewardPoints() throws Exception {
+    public Map<String, Double> getAllCustomerRewardPoints() throws ServiceException {
         Map<String, Double> allCustomerRewardPoints = new HashMap<>();
 
         if (!PTAC_TX_DATA.isEmpty()) {
             PTAC_TX_DATA.forEach((k,v) -> {
-               PtacTransaction ptx = v;
+               PtacTransactionEntity ptx = v;
                PtacUser user = ptx.getUser();
                //If user already exists, then add up the transaction to the existing points.
                if (allCustomerRewardPoints.get(user.getUserName()) != null) {
                    Double val = allCustomerRewardPoints.get(user.getUserName());
                    Double addVal = ptx.getPoints();
                    Double sum = Double.valueOf((val + addVal));
+
+                   //Round up in 2 decimal places.
                    allCustomerRewardPoints.put(user.getUserName(),
                            BigDecimal.valueOf(sum).setScale(2, RoundingMode.HALF_UP).doubleValue());
                } else {
@@ -57,32 +60,45 @@ public class PointAccumulatorServiceImpl implements PointAccumulatorService {
                }
             });
         } else {
-            throw new Exception("No data detected in static mem.");
+            throw new ServiceException("No data detected in static mem.");
         }
         return allCustomerRewardPoints;
     }
 
     @Override
-    public void saveCustomerTransactionPoints(PtacNewTransaction newTx, Double amountValue) throws Exception {
-        Double pts = Double.valueOf(0.0);
-        if (!PTAC_USERS.isEmpty()) {
-            pts = this.getPointsFromAmount(amountValue);
-            List<PtacUser> ptacUsers = this.validateUser(PTAC_USERS,
-                    (PtacUser user) -> user.getUserName().equals(newTx.getUserName()));
-            if (ptacUsers == null || ptacUsers.isEmpty()) {
-                throw new Exception("User " + newTx.getUserName() + " does not exists.");
+    public void saveCustomerTransactionPoints(PtacNewTransaction newTx) throws ServiceException {
+        try {
+            Double pts = Double.valueOf(0.0);
+            Double amountValue = Double.parseDouble(newTx.getAmount());
+            //Customer should exist per rule, and amount value of the transaction
+            //must only be positive value
+            if (!PTAC_USERS.isEmpty() && Double.compare(amountValue, 0.0) > 0) {
+                pts = this.getPointsFromAmount(amountValue);
+                List<PtacUser> ptacUsers = this.validateUser(PTAC_USERS,
+                        (PtacUser user) -> user.getUserName().equals(newTx.getUserName()));
+
+                if (ptacUsers == null || ptacUsers.isEmpty()) {
+                    throw new ServiceException("User " + newTx.getUserName() + " does not exists.");
+                }
+                if (!pts.equals(Double.valueOf(0.0))) {
+                    PtacTransactionEntity ptx = new PtacTransactionEntity(LocalDate.now(), ptacUsers.get(0), pts);
+                    PTAC_TX_DATA.put(PTAC_ID++, ptx);
+                }
             }
-            if (!pts.equals(Double.valueOf(0.0))) {
-                PtacTransaction ptx = new PtacTransaction(LocalDate.now(), ptacUsers.get(0), pts);
-                PTAC_TX_DATA.put(PTAC_ID++, ptx);
-            }
+            newTx.setAddedPts(pts);
+
+        } catch (NumberFormatException e) {
+            throw new ServiceException("Amount value is not in proper format.", e);
         }
 
-        newTx.setAddedPts(pts);
     }
 
     @Override
-    public void createCustomerData(PtacUser user) throws Exception {
+    public void createCustomerData(PtacUser user) throws ServiceException {
+        if (PTAC_USERS.contains(user)) {
+            throw new ServiceException("User " + user.getUserName() + " already exists.");
+        }
+
         user.setUserId(Calendar.getInstance().getTimeInMillis());
         PTAC_USERS.add(user);
     }

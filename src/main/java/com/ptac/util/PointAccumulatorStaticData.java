@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.ptac.model.PtacTransaction;
+import com.ptac.model.PtacTransactionEntity;
 import com.ptac.model.PtacUser;
 
 /**
@@ -15,7 +15,7 @@ import com.ptac.model.PtacUser;
  *
  */
 public class PointAccumulatorStaticData {
-	public static Map<Integer, PtacTransaction> PTAC_TX_DATA;
+	public static Map<Integer, PtacTransactionEntity> PTAC_TX_DATA;
 	public static Set<PtacUser> PTAC_USERS;
 	public static int PTAC_ID = 1;
 	static {
@@ -34,13 +34,13 @@ public class PointAccumulatorStaticData {
 	    user1.setUserName("kevin.durant@brooklynnets.com");
 	    user1.setPassword("kd1234");
 	    PTAC_USERS.add(user1);
-	    PtacTransaction trx1 = new PtacTransaction(LocalDate.of(2020, 1, 22), user1, Double.valueOf(55.0));
+	    PtacTransactionEntity trx1 = new PtacTransactionEntity(LocalDate.of(2020, 1, 22), user1, Double.valueOf(55.0));
 	    PTAC_TX_DATA.put(PTAC_ID++, trx1);
-	    PtacTransaction trx2 = new PtacTransaction(LocalDate.of(2020, 1, 29), user1, Double.valueOf(15.25));
+	    PtacTransactionEntity trx2 = new PtacTransactionEntity(LocalDate.of(2020, 1, 29), user1, Double.valueOf(15.25));
 	    PTAC_TX_DATA.put(PTAC_ID++, trx2);
-	    PtacTransaction trx3 = new PtacTransaction(LocalDate.of(2020, 2, 11), user1, Double.valueOf(8.16));
+	    PtacTransactionEntity trx3 = new PtacTransactionEntity(LocalDate.of(2020, 2, 11), user1, Double.valueOf(8.16));
 	    PTAC_TX_DATA.put(PTAC_ID++, trx3);
-	    PtacTransaction trx4 = new PtacTransaction(LocalDate.of(2020, 3, 1), user1, Double.valueOf(70.95));
+	    PtacTransactionEntity trx4 = new PtacTransactionEntity(LocalDate.of(2020, 3, 1), user1, Double.valueOf(70.95));
 	    PTAC_TX_DATA.put(PTAC_ID++, trx4);
 
 	    //User 2
@@ -49,9 +49,9 @@ public class PointAccumulatorStaticData {
 	    user2.setUserName("donovan.mitchell@utahjazz.com");
 	    user2.setPassword("dm1234");
         PTAC_USERS.add(user2);
-        PtacTransaction trxD1 = new PtacTransaction(LocalDate.of(2020, 2, 17), user2, Double.valueOf(5.50));
+        PtacTransactionEntity trxD1 = new PtacTransactionEntity(LocalDate.of(2020, 2, 17), user2, Double.valueOf(5.50));
         PTAC_TX_DATA.put(PTAC_ID++, trxD1);
-        PtacTransaction trxD2 = new PtacTransaction(LocalDate.of(2020, 3, 23), user2, Double.valueOf(11.63));
+        PtacTransactionEntity trxD2 = new PtacTransactionEntity(LocalDate.of(2020, 3, 23), user2, Double.valueOf(11.63));
         PTAC_TX_DATA.put(PTAC_ID++, trxD2);
 
         //User 3
@@ -60,15 +60,15 @@ public class PointAccumulatorStaticData {
         user3.setUserName("jimmy.butler@miamiheat.com");
         user3.setPassword("jb1234");
         PTAC_USERS.add(user3);
-        PtacTransaction trxJ1 = new PtacTransaction(LocalDate.of(2020, 1, 1), user3, Double.valueOf(2.00));
+        PtacTransactionEntity trxJ1 = new PtacTransactionEntity(LocalDate.of(2020, 1, 1), user3, Double.valueOf(2.00));
         PTAC_TX_DATA.put(PTAC_ID++, trxJ1);
-        PtacTransaction trxJ2 = new PtacTransaction(LocalDate.of(2020, 1, 23), user3, Double.valueOf(20.74));
+        PtacTransactionEntity trxJ2 = new PtacTransactionEntity(LocalDate.of(2020, 1, 23), user3, Double.valueOf(20.74));
         PTAC_TX_DATA.put(PTAC_ID++, trxJ2);
-        PtacTransaction trxJ3 = new PtacTransaction(LocalDate.of(2020, 2, 1), user3, Double.valueOf(84.32));
+        PtacTransactionEntity trxJ3 = new PtacTransactionEntity(LocalDate.of(2020, 2, 1), user3, Double.valueOf(84.32));
         PTAC_TX_DATA.put(PTAC_ID++, trxJ3);
-        PtacTransaction trxJ4 = new PtacTransaction(LocalDate.of(2020, 2, 29), user3, Double.valueOf(0.25));
+        PtacTransactionEntity trxJ4 = new PtacTransactionEntity(LocalDate.of(2020, 2, 29), user3, Double.valueOf(0.25));
         PTAC_TX_DATA.put(PTAC_ID++, trxJ4);
-        PtacTransaction trxJ5 = new PtacTransaction(LocalDate.of(2020, 3, 29), user3, Double.valueOf(44.44));
+        PtacTransactionEntity trxJ5 = new PtacTransactionEntity(LocalDate.of(2020, 3, 29), user3, Double.valueOf(44.44));
         PTAC_TX_DATA.put(PTAC_ID++, trxJ5);
 
         //Admin

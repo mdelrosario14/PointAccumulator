@@ -17,6 +17,7 @@ import com.ptac.model.PtacMultiTransaction;
 import com.ptac.model.PtacNewTransaction;
 import com.ptac.model.PtacUser;
 import com.ptac.service.PointAccumulatorService;
+import com.ptac.util.PointAccumulatorUtil;
 
 /**
  * Http request on getting/setting user's transactions.
@@ -55,9 +56,8 @@ public class PointAccumulatorAdminController {
     @PostMapping("/saveCustomerPoints")
     public ResponseEntity<?> saveCustomerPoints(@RequestBody PtacNewTransaction newTx) {
         try {
-            if (newTx != null && newTx.getUserName() != null && !newTx.getUserName().isEmpty()) {
-                this.pointAccumulatorService.saveCustomerTransactionPoints(
-                        newTx, Double.valueOf(newTx.getAmount()));
+            if (PointAccumulatorUtil.isModelValid(newTx)) {
+                this.pointAccumulatorService.saveCustomerTransactionPoints(newTx);
                 return ResponseEntity.ok(newTx);
             }
         } catch (Exception e) {
@@ -74,7 +74,7 @@ public class PointAccumulatorAdminController {
     @PutMapping("/createCustomer")
     public ResponseEntity<?> createCustomer(@RequestBody PtacUser user) {
         try {
-            if (user != null && !user.getUserName().isEmpty() && !user.getPassword().isEmpty()) {
+            if (PointAccumulatorUtil.isModelValid(user)) {
                 this.pointAccumulatorService.createCustomerData(user);
                 return ResponseEntity.ok("Successfully created user: " + user.getUserName());
             }
@@ -97,12 +97,11 @@ public class PointAccumulatorAdminController {
     public ResponseEntity<?> createCustomerAndPoints(@RequestBody PtacMultiTransaction multiTx) {
 
         try {
-            if (this.validateModels(multiTx.getUser(), multiTx.getNewTx())) {
+            if (PointAccumulatorUtil.isModelValid(multiTx)) {
                 PtacUser user = multiTx.getUser();
                 PtacNewTransaction newTx = multiTx.getNewTx();
                 this.pointAccumulatorService.createCustomerData(user);
-                this.pointAccumulatorService.saveCustomerTransactionPoints(
-                        newTx, Double.valueOf(newTx.getAmount()));
+                this.pointAccumulatorService.saveCustomerTransactionPoints(newTx);
                 return ResponseEntity.ok("Successfully created user: " + user.getUserName() +
                         " and added pts: " + newTx.getAddedPts());
             }
@@ -115,14 +114,4 @@ public class PointAccumulatorAdminController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unable to process request.");
     }
 
-    /**
-     * Return if PtacUser and PtacNewTransaction
-     * @param user              PtacUser input reference.
-     * @param newTx             PtacNewTransaction input reference.
-     * @return true/false.
-     */
-    private boolean validateModels(PtacUser user, PtacNewTransaction newTx) {
-        return user != null && !user.getUserName().isEmpty() && !user.getPassword().isEmpty() &&
-                newTx != null && newTx.getUserName() != null && !newTx.getUserName().isEmpty();
-    }
 }
