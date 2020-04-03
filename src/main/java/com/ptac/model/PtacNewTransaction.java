@@ -8,6 +8,7 @@ package com.ptac.model;
 public class PtacNewTransaction {
     private String userName;
     private String amount;
+    private Double addedPts;
 
     public String getUserName() {
         return userName;
@@ -20,5 +21,11 @@ public class PtacNewTransaction {
     }
     public void setAmount(String amount) {
         this.amount = amount;
+    }
+    public Double getAddedPts() {
+        return addedPts;
+    }
+    public void setAddedPts(Double addedPts) {
+        this.addedPts = addedPts;
     }
 }

@@ -30,7 +30,7 @@ public class PointAccumulatorStaticData {
 	private static void populateInitialData() {
 	    //User 1
 	    PtacUser user1 = new PtacUser();
-	    user1.setUserId(1);
+	    user1.setUserId(1L);
 	    user1.setUserName("kevin.durant@brooklynnets.com");
 	    user1.setPassword("kd1234");
 	    PTAC_USERS.add(user1);
@@ -45,7 +45,7 @@ public class PointAccumulatorStaticData {
 
 	    //User 2
 	    PtacUser user2 = new PtacUser();
-	    user2.setUserId(2);
+	    user2.setUserId(2L);
 	    user2.setUserName("donovan.mitchell@utahjazz.com");
 	    user2.setPassword("dm1234");
         PTAC_USERS.add(user2);
@@ -56,7 +56,7 @@ public class PointAccumulatorStaticData {
 
         //User 3
         PtacUser user3 = new PtacUser();
-        user3.setUserId(3);
+        user3.setUserId(3L);
         user3.setUserName("jimmy.butler@miamiheat.com");
         user3.setPassword("jb1234");
         PTAC_USERS.add(user3);
@@ -73,7 +73,7 @@ public class PointAccumulatorStaticData {
 
         //Admin
         PtacUser admin = new PtacUser();
-        admin.setUserId(4);
+        admin.setUserId(4L);
         admin.setUserName("kobe.bryant@lalakers.com");
         admin.setPassword("kb1234");
         PTAC_USERS.add(admin);

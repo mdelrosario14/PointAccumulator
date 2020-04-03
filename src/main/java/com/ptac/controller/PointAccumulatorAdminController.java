@@ -8,11 +8,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ptac.model.PtacNewTransaction;
+import com.ptac.model.PtacUser;
 import com.ptac.service.PointAccumulatorService;
 
 /**
@@ -40,9 +42,8 @@ public class PointAccumulatorAdminController {
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             LOGGER.error(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unable to process request.");
-
     }
 
     /**
@@ -54,11 +55,27 @@ public class PointAccumulatorAdminController {
     public ResponseEntity<?> saveCustomerPoints(@RequestBody PtacNewTransaction newTx) {
         try {
             if (newTx != null && newTx.getUserName() != null && !newTx.getUserName().isEmpty()) {
-                this.pointAccumulatorService.saveCustomerTransactionPoints(newTx, Double.valueOf(newTx.getAmount()));
-                return ResponseEntity.ok("Successfully saved transaction");
+                this.pointAccumulatorService.saveCustomerTransactionPoints(
+                        newTx, Double.valueOf(newTx.getAmount()));
+                return ResponseEntity.ok(newTx);
             }
-        }  catch (Exception e) {
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unable to process request.");
+    }
+
+    @PutMapping("/createCustomer")
+    public ResponseEntity<?> createCustomer(@RequestBody PtacUser user) {
+        try {
+            if (user != null && !user.getUserName().isEmpty() && !user.getPassword().isEmpty()) {
+                this.pointAccumulatorService.createCustomerData(user);
+                return ResponseEntity.ok("Successfully created user: " + user.getUserName());
+            }
+        } catch (Exception e) {
             LOGGER.error(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+
         }
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unable to process request.");

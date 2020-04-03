@@ -7,6 +7,7 @@ import static com.ptac.util.PointAccumulatorStaticData.PTAC_USERS;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,10 +41,11 @@ public class PointAccumulatorServiceImpl implements PointAccumulatorService {
     public Map<String, Double> getAllCustomerRewardPoints() throws Exception {
         Map<String, Double> allCustomerRewardPoints = new HashMap<>();
 
-        if (PTAC_TX_DATA != null && !PTAC_TX_DATA.isEmpty()) {
+        if (!PTAC_TX_DATA.isEmpty()) {
             PTAC_TX_DATA.forEach((k,v) -> {
                PtacTransaction ptx = v;
                PtacUser user = ptx.getUser();
+               //If user already exists, then add up the transaction to the existing points.
                if (allCustomerRewardPoints.get(user.getUserName()) != null) {
                    Double val = allCustomerRewardPoints.get(user.getUserName());
                    Double addVal = ptx.getPoints();
@@ -62,16 +64,27 @@ public class PointAccumulatorServiceImpl implements PointAccumulatorService {
 
     @Override
     public void saveCustomerTransactionPoints(PtacNewTransaction newTx, Double amountValue) throws Exception {
-        Double pts = this.getPointsFromAmount(amountValue);
-        List<PtacUser> ptacUsers = this.validateUser(PTAC_USERS,
-                (PtacUser user) -> user.getUserName().equals(newTx.getUserName()));
-        if (ptacUsers == null || ptacUsers.isEmpty()) {
-            throw new Exception("User " + newTx.getUserName() + " does not exists.");
+        Double pts = Double.valueOf(0.0);
+        if (!PTAC_USERS.isEmpty()) {
+            pts = this.getPointsFromAmount(amountValue);
+            List<PtacUser> ptacUsers = this.validateUser(PTAC_USERS,
+                    (PtacUser user) -> user.getUserName().equals(newTx.getUserName()));
+            if (ptacUsers == null || ptacUsers.isEmpty()) {
+                throw new Exception("User " + newTx.getUserName() + " does not exists.");
+            }
+            if (!pts.equals(Double.valueOf(0.0))) {
+                PtacTransaction ptx = new PtacTransaction(LocalDate.now(), ptacUsers.get(0), pts);
+                PTAC_TX_DATA.put(PTAC_ID++, ptx);
+            }
         }
-        if (!pts.equals(Double.valueOf(0.0))) {
-            PtacTransaction ptx = new PtacTransaction(LocalDate.now(), ptacUsers.get(0), pts);
-            PTAC_TX_DATA.put(PTAC_ID++, ptx);
-        }
+
+        newTx.setAddedPts(pts);
+    }
+
+    @Override
+    public void createCustomerData(PtacUser user) throws Exception {
+        user.setUserId(Calendar.getInstance().getTimeInMillis());
+        PTAC_USERS.add(user);
     }
 
     /**
