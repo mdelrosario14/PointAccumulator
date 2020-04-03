@@ -1,0 +1,70 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'war'
+
+
+buildscript {
+    ext {
+        springBootVersion = '1.4.3.RELEASE'
+        tomcatVersion = '7.0.90'
+        baseProjectName = 'pointAccumulator'
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+jar {
+	baseName = 'boot-gradle'
+	version = '0.0.1-SNAPSHOT'
+}
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+	mavenCentral()
+}
+
+configurations {
+	all*.resolutionStrategy {
+		eachDependency {
+			if (it.requested.group == 'org.apache.tomcat.embed') {
+				it.useVersion "$tomcatVersion"
+			}
+		}
+	}
+}
+
+dependencies {
+	compile(  'org.springframework.boot:spring-boot-starter-web',
+		      'org.springframework.boot:spring-boot-starter-security',
+		      'commons-validator:commons-validator:1.4.0',
+		      'org.apache.commons:commons-lang3:3.0'
+		)
+		
+		
+	providedCompile (
+	    'org.apache.tomcat.embed:tomcat-embed-jasper',
+		'org.apache.tomcat:tomcat-juli:7.0.90',
+		'org.springframework.boot:spring-boot-starter-tomcat',
+		'org.eclipse.jdt.core.compiler:ecj:4.6.1'
+    )
+	
+	
+	
+	testCompile('org.springframework.boot:spring-boot-starter-test')
+	testCompile('org.springframework.security:spring-security-test')
+}
+
+
+war {
+	baseName = "$baseProjectName"
+	archiveName = baseName + ".war"
+	
+	exclude '**/tomcat*.jar'
+	
+}
